@@ -9,12 +9,14 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer; // LayerMask for detecting ground
 
     private Rigidbody2D rb;
-    private bool isGrounded;
+    private Animator animator;
     private bool facingRight = true; // Keep track of the player's facing direction
+    private bool canJump = false; // Track if the player can jump
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         rb.freezeRotation = true; // Freeze rotation
     }
 
@@ -34,19 +36,28 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
 
-        // Check if grounded
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, groundLayer);
+        // Update the animator based on movement
+        animator.SetFloat("MOVE", Mathf.Abs(moveDirection));
 
         // Jump
-        if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W)) && isGrounded)
+        if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W)) && canJump)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            canJump = false;
         }
 
         // Rotate the player 90 degrees to the right
         if (Input.GetKeyDown(KeyCode.R))
         {
             transform.Rotate(Vector3.forward, -90f);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("san"))
+        {
+            canJump = true;
         }
     }
 
