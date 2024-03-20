@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -184,7 +185,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10.01568
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -209,12 +210,27 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1.88, y: 2.7, z: -10}
+  m_LocalScale: {x: 1.0071, y: 1.2991589, z: 1.0071}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c39af07537e1de64194988759a124f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FollowSpeed: 2
+  yOffset: 1
+  target: {fileID: 745067790}
 --- !u!1 &745067787
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,9 +275,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!212 &745067789
 SpriteRenderer:
@@ -324,7 +340,7 @@ Transform:
   m_GameObject: {fileID: 745067787}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.2239, y: -0.11, z: 0}
+  m_LocalPosition: {x: 1.43, y: 2.44, z: 0}
   m_LocalScale: {x: 3.443608, y: 2.8503, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -387,10 +403,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0d8cd87443295b449bb6618da1c4a9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toc_to: 0
-  di_chuyen: 0
-  do_cao: 0
-  duocPhepNhay: 0
+  moveSpeed: 5
+  jumpForce: 10
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!95 &745067793
 Animator:
   serializedVersion: 5
