@@ -2,58 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class code : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-    public float toc_to;
-    public int di_chuyen;
-    public int do_cao;
-    public bool duocPhepNhay;
+    public float moveSpeed = 5f; // Speed of player movement
+    public float jumpForce = 10f; // Force of player jump
+    public LayerMask groundLayer; // LayerMask for detecting ground
 
-    private Rigidbody2D cd;
-    // Start is called before the first frame update
+    private Rigidbody2D rb;
+    private bool isGrounded;
+
     void Start()
     {
-        cd = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
+        rb.freezeRotation = true; // Freeze rotation
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //move
-        if (Input.GetKey(KeyCode.LeftArrow))
+        // Move horizontally
+        float moveDirection = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
+
+        // Check if grounded
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, groundLayer);
+
+        // Jump
+        if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W)) && isGrounded)
         {
-            di_chuyen = -1;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
-        else if (Input.GetKey(KeyCode.RightArrow))
+
+        // Rotate the player 90 degrees to the right
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            di_chuyen = 1;
-        }
-        else 
-        {
-            di_chuyen = 0;
-        }
-        transform.Translate(Vector2.right * di_chuyen * toc_to * Time.deltaTime);
-        //jump
-        
-        if(Input.GetKeyDown(KeyCode.Space) && duocPhepNhay)
-        {
-            cd.AddForce(Vector2.up * do_cao, ForceMode2D.Impulse);
-        }
-    }
-    private void OnTriggerEnter2D(Collider2D hitboxkhac)
-    {
-        if(hitboxkhac.gameObject.tag == "san")
-        {
-            duocPhepNhay = true;
-        }
-    }
-    private void OnTriggerExit2D(Collider2D hitboxkhac)
-    {
-        if (hitboxkhac.gameObject.tag == "san")
-        {
-            duocPhepNhay = false;
+            transform.Rotate(Vector3.forward, -90f);
         }
     }
 }
-
-
