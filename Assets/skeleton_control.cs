@@ -10,6 +10,11 @@ public class skeleton_control : MonoBehaviour
     private Animator anim;
     private Transform currentPoint;
     public float speed;
+    public float attackRange;
+    private PlayerController player;
+    public int hp;
+
+    private bool isAttacked, isAttacking;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,11 +22,13 @@ public class skeleton_control : MonoBehaviour
         anim=GetComponent<Animator>();
         currentPoint=pointB.transform;
         anim.SetBool("isRunning", true);
+        player = FindObjectOfType<PlayerController>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(isAttacked || isAttacking) return;
         Vector2 point = currentPoint.position - transform.position;
         if(currentPoint == pointB.transform)
         {
@@ -41,6 +48,8 @@ public class skeleton_control : MonoBehaviour
             Flip();
             currentPoint=pointB.transform;
         }
+        
+        CheckAttack();
     }
 
     private void Flip ()
@@ -54,5 +63,53 @@ public class skeleton_control : MonoBehaviour
         Gizmos.DrawWireSphere(pointA.transform.position, 0.5f);
         Gizmos.DrawWireSphere(pointB.transform.position, 0.5f);
         Gizmos.DrawLine(pointA.transform.position, pointB.transform.position);
+    }
+
+    public void TakeDam()
+    {
+        isAttacked = true;
+        isAttacking = false;
+        anim.SetBool("attack", false);
+        hp--;
+        if (hp > 0)
+        {
+            anim.SetBool("takeDam", true);
+        }
+        else
+        {
+            anim.SetTrigger("dead");
+            // GetComponent<CapsuleCollider2D>().enabled = false;
+        }
+    }
+
+    public void CheckAttack()
+    {
+        isAttacked = false;
+        if (Mathf.Abs(transform.position.x - player.transform.position.x) < attackRange && IsAttackDirection())
+        {
+            anim.SetBool("attack", true);
+            isAttacking = true;
+        }
+        else
+        {
+            anim.SetBool("attack", false);
+            isAttacking = false;
+        }
+        anim.SetBool("takeDam", false);
+    }
+
+    public void DealDamToPlayer()
+    {
+        if (Mathf.Abs(transform.position.x - player.transform.position.x) < attackRange)
+        {
+            //TODO: Deal dam to player;
+            player.TakeDam();
+        }
+    }
+
+    private bool IsAttackDirection()
+    {
+        return (transform.position.x > player.transform.position.x && transform.localScale.x < 0)
+            || (transform.position.x < player.transform.position.x && transform.localScale.x > 0);
     }
 }

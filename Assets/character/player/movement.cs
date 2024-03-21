@@ -12,8 +12,10 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private bool facingRight = true; // Keep track of the player's facing direction
-    private bool canJump = false; // Track if the player can jump
-    private bool isAttacking = false; // Track if the player is currently attacking
+    public bool canJump = false; // Track if the player can jump
+    private bool isAttacking = false;
+    private bool isAttacked = false;// Track if the player is currently attacking
+    public int hp;
 
     void Start()
     {
@@ -25,8 +27,12 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Move horizontally
+        if(isAttacked) return;
         float moveDirection = Input.GetAxis("Horizontal");
-        rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
+        if (!isAttacking)
+        {
+            rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
+        }
 
         // Flip the player's sprite if moving in the opposite direction
         if (moveDirection > 0 && !facingRight)
@@ -41,8 +47,12 @@ public class PlayerController : MonoBehaviour
         // Update the animator based on movement
         animator.SetFloat("MOVE", Mathf.Abs(moveDirection));
 
+        if (Mathf.Abs(rb.velocity.y) < 0.01f)
+        {
+            canJump = true;
+        }
         // Jump
-        if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W)) && canJump)
+        if ((Input.GetKeyDown(KeyCode.W)) && canJump)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             canJump = false;
@@ -51,14 +61,7 @@ public class PlayerController : MonoBehaviour
         // Attack with animation
         if (Input.GetKeyDown(KeyCode.J))
         {
-            if (moveDirection > 0)
-            {
-                Attack();
-            }
-            else if (moveDirection < 0.1f)
-            {
-                StopAttack();
-            }
+            Attack();
         }
 
         // Rotate the player 90 degrees to the right
@@ -82,13 +85,28 @@ public class PlayerController : MonoBehaviour
         isAttacking = true;
 
         // Detect enemies in range
+    }
+
+    public void DealDamToEnemy()
+    {
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
 
+        // Debug.LogError(hitEnemies.Length);
         // Damage enemies
         foreach (Collider2D enemy in hitEnemies)
         {
             // Implement your damage logic here
             Debug.Log("Attacked enemy: " + enemy.name);
+            if (enemy.CompareTag("flyingeye"))
+            {
+                var flyingeye = enemy.GetComponent<FlyingObjectController>();
+                flyingeye.TakeDam();
+            }
+            else if (enemy.CompareTag("skeleton"))
+            {
+                var skeleton = enemy.GetComponent<skeleton_control>();
+                skeleton.TakeDam();
+            }
         }
     }
 
@@ -116,5 +134,27 @@ public class PlayerController : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+    }
+
+    public void TakeDam()
+    {
+        if(hp <= 0) return;
+        hp--;
+        isAttacking = false;
+        isAttacked = true;
+        if (hp > 0)
+        {
+            animator.SetTrigger("takeDam");
+        }
+        else
+        {
+            animator.SetBool("dead", true);
+        }
+    }
+
+    public void EndTakeDam()
+    {
+        if(hp <= 0) return;
+        isAttacked = false;
     }
 }
