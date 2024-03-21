@@ -49,7 +49,7 @@ public class skeleton_control : MonoBehaviour
         localScale.x *= -1;
         transform.localScale = localScale; 
     }
-    private void OnDrawGizmos()
+    private void OnDrawGizmos1()
     {
         Gizmos.DrawWireSphere(pointA.transform.position, 0.5f);
         Gizmos.DrawWireSphere(pointB.transform.position, 0.5f);
