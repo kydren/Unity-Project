@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
     void Attack()
     {
-        animator.SetTrigger("Attack"); // Trigger attack animation
+        animator.SetBool("attack", true); // Trigger attack animation
         isAttacking = true;
 
         // Detect enemies in range
@@ -94,7 +94,7 @@ public class PlayerController : MonoBehaviour
 
     void StopAttack()
     {
-        animator.SetTrigger("StopAttack"); // Stop attack animation
+        animator.SetBool("attack", false); // Stop attack animation
         isAttacking = false;
     }
 
