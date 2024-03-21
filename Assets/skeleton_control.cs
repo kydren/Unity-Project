@@ -18,9 +18,9 @@ public class skeleton_control : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb=GetComponent<Rigidbody2D>();
-        anim=GetComponent<Animator>();
-        currentPoint=pointB.transform;
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        currentPoint = pointB.transform;
         anim.SetBool("isRunning", true);
         player = FindObjectOfType<PlayerController>();
     }
@@ -28,9 +28,9 @@ public class skeleton_control : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(isAttacked || isAttacking) return;
+        if (isAttacked || isAttacking) return;
         Vector2 point = currentPoint.position - transform.position;
-        if(currentPoint == pointB.transform)
+        if (currentPoint == pointB.transform)
         {
             rb.velocity = new Vector2(speed, 0);
         }
@@ -38,25 +38,25 @@ public class skeleton_control : MonoBehaviour
         {
             rb.velocity = new Vector2(-speed, 0);
         }
-        if(Vector2.Distance(transform.position, currentPoint.position)<0.5f && currentPoint == pointB.transform)
+        if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointB.transform)
         {
             Flip();
-            currentPoint=pointA.transform;
+            currentPoint = pointA.transform;
         }
-        if(Vector2.Distance(transform.position, currentPoint.position)<0.5f && currentPoint == pointA.transform)
+        if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointA.transform)
         {
             Flip();
-            currentPoint=pointB.transform;
+            currentPoint = pointB.transform;
         }
-        
+
         CheckAttack();
     }
 
-    private void Flip ()
+    private void Flip()
     {
         Vector3 localScale = transform.localScale;
         localScale.x *= -1;
-        transform.localScale = localScale; 
+        transform.localScale = localScale;
     }
     private void OnDrawGizmos1()
     {
@@ -67,10 +67,15 @@ public class skeleton_control : MonoBehaviour
 
     public void TakeDam()
     {
+        if (hp <= 0)
+        {
+            return;
+        }
         isAttacked = true;
         isAttacking = false;
         anim.SetBool("attack", false);
         hp--;
+
         if (hp > 0)
         {
             anim.SetBool("takeDam", true);
@@ -78,7 +83,9 @@ public class skeleton_control : MonoBehaviour
         else
         {
             anim.SetTrigger("dead");
-            // GetComponent<CapsuleCollider2D>().enabled = false;
+            // Disable Rigidbody2D and CapsuleCollider2D when dead
+            rb.simulated = false;
+            GetComponent<CapsuleCollider2D>().enabled = false;
         }
     }
 
