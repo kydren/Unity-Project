@@ -11,8 +11,10 @@ public class skeleton_control : MonoBehaviour
     private Transform currentPoint;
     public float speed;
     public float attackRange;
+    public float chaseRange = 5f;
     private PlayerController player;
     public int hp;
+    private bool isChasePlayer;
 
     private bool isAttacked, isAttacking;
     // Start is called before the first frame update
@@ -29,26 +31,45 @@ public class skeleton_control : MonoBehaviour
     void Update()
     {
         if(isAttacked || isAttacking) return;
-        Vector2 point = currentPoint.position - transform.position;
-        if(currentPoint == pointB.transform)
+        if (!isChasePlayer)
         {
-            rb.velocity = new Vector2(speed, 0);
+            Vector2 point = currentPoint.position - transform.position;
+            if(currentPoint == pointB.transform)
+            {
+                rb.velocity = new Vector2(speed, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-speed, 0);
+            }
+            if(Vector2.Distance(transform.position, currentPoint.position)<0.5f && currentPoint == pointB.transform)
+            {
+                Flip();
+                currentPoint=pointA.transform;
+            }
+            if(Vector2.Distance(transform.position, currentPoint.position)<0.5f && currentPoint == pointA.transform)
+            {
+                Flip();
+                currentPoint=pointB.transform;
+            }
         }
         else
         {
-            rb.velocity = new Vector2(-speed, 0);
+            if (!IsAttackDirection())
+            {
+                Flip();
+            }
+
+            if (transform.localScale.x < 0)
+            {
+                rb.velocity = new Vector2(-speed, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector2(speed, 0);
+            }
         }
-        if(Vector2.Distance(transform.position, currentPoint.position)<0.5f && currentPoint == pointB.transform)
-        {
-            Flip();
-            currentPoint=pointA.transform;
-        }
-        if(Vector2.Distance(transform.position, currentPoint.position)<0.5f && currentPoint == pointA.transform)
-        {
-            Flip();
-            currentPoint=pointB.transform;
-        }
-        
+        CheckChasePlayer();
         CheckAttack();
     }
 
@@ -111,5 +132,13 @@ public class skeleton_control : MonoBehaviour
     {
         return (transform.position.x > player.transform.position.x && transform.localScale.x < 0)
             || (transform.position.x < player.transform.position.x && transform.localScale.x > 0);
+    }
+
+    private void CheckChasePlayer()
+    {
+        if (Mathf.Abs(transform.position.x - player.transform.position.x) < chaseRange)
+        {
+            isChasePlayer = true;
+        }
     }
 }
