@@ -6,6 +6,7 @@ public class FlyingObjectController : MonoBehaviour
 {
     public Transform pointC;
     public Transform pointD;
+    public Transform spawnPos;
     public float speed;
     public float attackRange;
     private Animator animator;
@@ -66,7 +67,7 @@ public class FlyingObjectController : MonoBehaviour
     public void CheckAttack()
     {
         isAttacked = false;
-        if (Mathf.Abs(transform.position.z - player.transform.position.z) < attackRange)
+        if (Mathf.Abs(transform.position.z - player.transform.position.z) < attackRange && IsAttackDirection())
         {
             animator.SetBool("attack", true);
         }
@@ -74,5 +75,11 @@ public class FlyingObjectController : MonoBehaviour
         {
             animator.SetBool("attack", false);
         }
+    }
+    
+    private bool IsAttackDirection()
+    {
+        return (transform.position.x > player.transform.position.x && transform.localScale.x < 0)
+               || (transform.position.x < player.transform.position.x && transform.localScale.x > 0);
     }
 }
